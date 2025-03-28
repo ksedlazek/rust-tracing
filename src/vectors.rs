@@ -15,14 +15,6 @@ impl UnitTrait for Vec3 {
     }
 }
 
-pub fn unit() -> Vec3 {
-    return Vec3::new(1.0, 1.0, 1.0);
-}
-
-pub fn origin() -> Vec3 {
-    return Vec3::new(0.0, 0.0, 0.0);
-}
-
 pub struct Colors {
     pub white: Vec3,
     pub black: Vec3,
