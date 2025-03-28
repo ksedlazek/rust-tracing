@@ -1,12 +1,25 @@
 mod ray;
 mod vectors;
 use ray::Ray;
-use vectors::{origin, unit, Dim, UnitTrait, Vec3};
+use vectors::*;
 
 fn color(r: &Ray) -> Vec3 {
+    let center = Vec3::new(0.0, 0.0, -1.0);
+    if hit_sphere(r, &center, 0.5) {
+        return COLORS.red;
+    }
     let unit_direction = r.direction.unit();
     let t = 0.5 * unit_direction.y + 1.0;
     return (1.0 - t) * unit() + t * Vec3::new(0.5, 0.7, 1.0);
+}
+
+fn hit_sphere(r: &Ray, center: &Vec3, radius: Dim) -> bool {
+    let oc = r.origin - center;
+    let a = r.direction.dot(&r.direction);
+    let b = 2.0 * oc.dot(&r.direction);
+    let c = oc.dot(&oc) - (radius * radius);
+    let discriminant = (b * b) - (4.0 * a * c);
+    return discriminant > 0.0;
 }
 
 fn main() {
