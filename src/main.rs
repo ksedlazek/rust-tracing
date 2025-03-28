@@ -1,63 +1,39 @@
+mod ray;
+mod vectors;
+use ray::{Ray, RayTrait};
+use vectors::{origin, unit, Dim, UnitTrait, Vec3};
+
+fn color(r: &Ray) -> Vec3 {
+    let unit_direction = r.direction().unit();
+    let t = 0.5 * unit_direction.y + 1.0;
+    return (1.0 - t) * unit() + t * Vec3::new(0.5, 0.7, 1.0);
+}
+
 fn main() {
     let nx = 200;
     let ny = 100;
     let mut imgbuf = image::ImageBuffer::new(nx, ny);
 
+    let lower_left_corner = Vec3::new(-2.0, -1.0, -1.0);
+    let horizontal = Vec3::new(4.0, 0.0, 0.0);
+    let vertical = Vec3::new(0.0, 2.0, 0.0);
+    let origin = origin();
     for j in 0..ny {
         for i in 0..nx {
-            let r = (i as f64) / (nx as f64);
-            let g = (j as f64) / (ny as f64);
-            let b = 0.2;
-            let ir = (255.99 * r) as u8;
-            let ig = (255.99 * g) as u8;
-            let ib = (255.99 * b) as u8;
+            let u = (i as Dim) / (nx as Dim);
+            let v = (j as Dim) / (ny as Dim);
+            let r = Ray {
+                o: origin,
+                d: lower_left_corner + u * horizontal + v * vertical,
+            };
+            let col = color(&r);
+            let ir = (255.99 * col.x) as u8;
+            let ig = (255.99 * col.y) as u8;
+            let ib = (255.99 * col.z) as u8;
             let pixel = imgbuf.get_pixel_mut(i, j);
             *pixel = image::Rgb([ir, ig, ib]);
         }
     }
 
     imgbuf.save("picture.png").unwrap();
-}
-
-fn julia() {
-    //! An example of generating julia fractals.
-    let imgx = 800;
-    let imgy = 800;
-
-    let scalex = 3.0 / imgx as f32;
-    let scaley = 3.0 / imgy as f32;
-
-    // Create a new ImgBuf with width: imgx and height: imgy
-    let mut imgbuf = image::ImageBuffer::new(imgx, imgy);
-
-    // Iterate over the coordinates and pixels of the image
-    for (x, y, pixel) in imgbuf.enumerate_pixels_mut() {
-        let r = (0.3 * x as f32) as u8;
-        let b = (0.3 * y as f32) as u8;
-        *pixel = image::Rgb([r, 0, b]);
-    }
-
-    // A redundant loop to demonstrate reading image data
-    for x in 0..imgx {
-        for y in 0..imgy {
-            let cx = y as f32 * scalex - 1.5;
-            let cy = x as f32 * scaley - 1.5;
-
-            let c = num_complex::Complex::new(-0.4, 0.6);
-            let mut z = num_complex::Complex::new(cx, cy);
-
-            let mut i = 0;
-            while i < 255 && z.norm() <= 2.0 {
-                z = z * z + c;
-                i += 1;
-            }
-
-            let pixel = imgbuf.get_pixel_mut(x, y);
-            let image::Rgb(data) = *pixel;
-            *pixel = image::Rgb([data[0], i as u8, data[2]]);
-        }
-    }
-
-    // Save the image as “fractal.png”, the format is deduced from the path
-    imgbuf.save("fractal.png").unwrap();
 }
