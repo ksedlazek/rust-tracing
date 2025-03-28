@@ -1,10 +1,10 @@
 mod ray;
 mod vectors;
-use ray::{Ray, RayTrait};
+use ray::Ray;
 use vectors::{origin, unit, Dim, UnitTrait, Vec3};
 
 fn color(r: &Ray) -> Vec3 {
-    let unit_direction = r.direction().unit();
+    let unit_direction = r.direction.unit();
     let t = 0.5 * unit_direction.y + 1.0;
     return (1.0 - t) * unit() + t * Vec3::new(0.5, 0.7, 1.0);
 }
@@ -23,8 +23,8 @@ fn main() {
             let u = (i as Dim) / (nx as Dim);
             let v = (j as Dim) / (ny as Dim);
             let r = Ray {
-                o: origin,
-                d: lower_left_corner + u * horizontal + v * vertical,
+                origin,
+                direction: lower_left_corner + u * horizontal + v * vertical,
             };
             let col = color(&r);
             let ir = (255.99 * col.x) as u8;
