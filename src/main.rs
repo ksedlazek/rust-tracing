@@ -30,7 +30,7 @@ fn main() {
             let ir = (255.99 * col.x) as u8;
             let ig = (255.99 * col.y) as u8;
             let ib = (255.99 * col.z) as u8;
-            let pixel = imgbuf.get_pixel_mut(i, j);
+            let pixel = imgbuf.get_pixel_mut(i, ny - j - 1);
             *pixel = image::Rgb([ir, ig, ib]);
         }
     }
