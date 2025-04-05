@@ -1,34 +1,22 @@
+mod hitable;
 mod ray;
+mod sphere;
 mod vectors;
 
-use ray::{Ray, RayTrait};
+use hitable::{HitableList, HitableTrait};
+use ray::Ray;
+use sphere::Sphere;
 use vectors::*;
 
-fn hit_sphere(r: &Ray, center: &Vec3, radius: Dim) -> Option<Dim> {
-    let oc = r.origin - center;
-    let a = r.direction.dot(&r.direction);
-    let b = 2.0 * oc.dot(&r.direction);
-    let c = oc.dot(&oc) - (radius * radius);
-    let discriminant = (b * b) - (4.0 * a * c);
-    if discriminant < 0.0 {
-        None
+fn color(r: &Ray, world: &dyn HitableTrait) -> Vec3 {
+    let hit_record = world.hit(r, 0.0, f32::MAX);
+    if hit_record.is_some() {
+        let rec = hit_record.unwrap();
+        return 0.5 * Vec3::new(rec.normal.x + 1.0, rec.normal.y + 1.0, rec.normal.z + 1.0);
     } else {
-        Some((-b - discriminant.sqrt()) / (2.0 * a))
-    }
-}
-
-fn color(r: &Ray) -> Vec3 {
-    let center = Vec3::new(0.0, 0.0, -1.0);
-    match hit_sphere(r, &center, 0.5) {
-        Some(hs) => {
-            let n = (r.point_at_parameter(hs) - center).unit();
-            return 0.5 * (n + VECTORS.unit);
-        }
-        None => {
-            let unit_direction = r.direction.unit();
-            let t = 0.5 * unit_direction.y + 1.0;
-            return ((1.0 - t) * VECTORS.unit) + (t * Vec3::new(0.5, 0.7, 1.0));
-        }
+        let unit_direction = r.direction.unit();
+        let t = 0.5 * (unit_direction.y + 1.0);
+        return (1.0 - t) * COLORS.white + t * COLORS.sky_blue;
     }
 }
 
@@ -41,15 +29,29 @@ fn main() {
     let horizontal = Vec3::new(4.0, 0.0, 0.0);
     let vertical = Vec3::new(0.0, 2.0, 0.0);
     let origin = VECTORS.origin;
+
+    let world: HitableList = HitableList {
+        list: vec![
+            Box::new(Sphere {
+                center: Vec3::new(0.0, 0.0, -1.0),
+                radius: 0.5,
+            }),
+            Box::new(Sphere {
+                center: Vec3::new(0.0, -100.5, -1.0),
+                radius: 100.0,
+            }),
+        ],
+    };
+
     for j in 0..ny {
         for i in 0..nx {
-            let u = (i as Dim) / (nx as Dim);
-            let v = (j as Dim) / (ny as Dim);
+            let u = (i as Num) / (nx as Num);
+            let v = (j as Num) / (ny as Num);
             let r = Ray {
                 origin,
                 direction: lower_left_corner + u * horizontal + v * vertical,
             };
-            let col = color(&r);
+            let col = color(&r, &world);
             let ir = (255.99 * col.x) as u8;
             let ig = (255.99 * col.y) as u8;
             let ib = (255.99 * col.z) as u8;
@@ -57,6 +59,5 @@ fn main() {
             *pixel = image::Rgb([ir, ig, ib]);
         }
     }
-
     imgbuf.save("picture.png").unwrap();
 }

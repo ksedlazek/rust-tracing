@@ -5,12 +5,8 @@ pub struct Ray {
     pub direction: na::Vector3<f32>,
 }
 
-pub trait RayTrait {
-    fn point_at_parameter(&self, t: f32) -> na::Vector3<f32>;
-}
-
-impl RayTrait for Ray {
-    fn point_at_parameter(&self, t: f32) -> na::Vector3<f32> {
+impl Ray {
+    pub fn point_at_parameter(&self, t: f32) -> na::Vector3<f32> {
         self.origin + t * self.direction
     }
 }

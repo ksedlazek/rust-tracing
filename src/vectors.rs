@@ -1,8 +1,8 @@
 use nalgebra as na;
 use once_cell::sync::Lazy;
 
-pub type Dim = f32;
-pub type Vec3 = na::Vector3<Dim>;
+pub type Num = f32;
+pub type Vec3 = na::Vector3<Num>;
 
 pub trait UnitTrait {
     fn unit(&self) -> Vec3;
@@ -21,6 +21,7 @@ pub struct Colors {
     pub red: Vec3,
     pub green: Vec3,
     pub blue: Vec3,
+    pub sky_blue: Vec3,
 }
 
 pub static COLORS: Lazy<Colors> = Lazy::new(|| Colors {
@@ -29,9 +30,11 @@ pub static COLORS: Lazy<Colors> = Lazy::new(|| Colors {
     red: Vec3::new(1.0, 0.0, 0.0),
     green: Vec3::new(0.0, 1.0, 0.0),
     blue: Vec3::new(0.0, 0.0, 1.0),
+    sky_blue: Vec3::new(0.5, 0.7, 1.0),
 });
 
 pub struct Vectors {
+    pub zero: Vec3,
     pub origin: Vec3,
     pub unit: Vec3,
     pub unit_x: Vec3,
@@ -40,6 +43,7 @@ pub struct Vectors {
 }
 
 pub static VECTORS: Lazy<Vectors> = Lazy::new(|| Vectors {
+    zero: Vec3::new(0.0, 0.0, 0.0),
     origin: Vec3::new(0.0, 0.0, 0.0),
     unit: Vec3::new(1.0, 1.0, 1.0),
     unit_x: Vec3::new(1.0, 0.0, 0.0),
