@@ -1,4 +1,4 @@
-use crate::vectors::*;
+use crate::vectors::{Num, Vec3};
 
 pub struct Ray {
     pub origin: Vec3,

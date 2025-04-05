@@ -1,7 +1,7 @@
 use nalgebra as na;
 use once_cell::sync::Lazy;
 
-pub type Num = f64;
+pub type Num = f32;
 pub type Vec3 = na::Vector3<Num>;
 
 pub trait UnitTrait {
@@ -15,6 +15,7 @@ impl UnitTrait for Vec3 {
     }
 }
 
+#[allow(dead_code)]
 pub struct Colors {
     pub white: Vec3,
     pub black: Vec3,
@@ -33,10 +34,11 @@ pub static COLORS: Lazy<Colors> = Lazy::new(|| Colors {
     sky_blue: Vec3::new(0.5, 0.7, 1.0),
 });
 
+#[allow(dead_code)]
 pub struct Vectors {
     pub zero: Vec3,
-    pub origin: Vec3,
     pub unit: Vec3,
+    pub origin: Vec3,
     pub unit_x: Vec3,
     pub unit_y: Vec3,
     pub unit_z: Vec3,

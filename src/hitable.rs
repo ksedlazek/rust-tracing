@@ -2,6 +2,7 @@ use crate::ray::*;
 use crate::vectors::*;
 
 #[derive(Debug, Clone)]
+#[allow(dead_code)]
 pub struct HitRecord {
     pub t: Num,
     pub p: Vec3,
