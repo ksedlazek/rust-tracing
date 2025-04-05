@@ -1,7 +1,7 @@
 use nalgebra as na;
 use once_cell::sync::Lazy;
 
-pub type Num = f32;
+pub type Num = f64;
 pub type Vec3 = na::Vector3<Num>;
 
 pub trait UnitTrait {
@@ -10,7 +10,7 @@ pub trait UnitTrait {
 
 impl UnitTrait for Vec3 {
     fn unit(&self) -> Vec3 {
-        let l = self.len() as f32;
+        let l = self.len() as Num;
         return Vec3::new(self.x / l, self.y / l, self.z / l);
     }
 }

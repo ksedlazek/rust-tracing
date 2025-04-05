@@ -9,7 +9,7 @@ use sphere::Sphere;
 use vectors::*;
 
 fn color(r: &Ray, world: &dyn HitableTrait) -> Vec3 {
-    let hit_record = world.hit(r, 0.0, f32::MAX);
+    let hit_record = world.hit(r, 0.0, Num::MAX);
     if hit_record.is_some() {
         let rec = hit_record.unwrap();
         return 0.5 * Vec3::new(rec.normal.x + 1.0, rec.normal.y + 1.0, rec.normal.z + 1.0);
@@ -21,8 +21,8 @@ fn color(r: &Ray, world: &dyn HitableTrait) -> Vec3 {
 }
 
 fn main() {
-    let nx = 200;
-    let ny = 100;
+    let nx = 1200;
+    let ny = 600;
     let mut imgbuf = image::ImageBuffer::new(nx, ny);
 
     let lower_left_corner = Vec3::new(-2.0, -1.0, -1.0);
@@ -43,8 +43,8 @@ fn main() {
         ],
     };
 
-    for j in 0..ny {
-        for i in 0..nx {
+    for i in 0..nx {
+        for j in 0..ny {
             let u = (i as Num) / (nx as Num);
             let v = (j as Num) / (ny as Num);
             let r = Ray {
