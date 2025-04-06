@@ -6,9 +6,11 @@ mod vectors;
 
 use camera::Camera;
 use hitable::{HitableList, HitableTrait};
+use indicatif::{ProgressBar, ProgressStyle};
 use rand::Rng;
 use ray::Ray;
 use sphere::Sphere;
+use std::time::Duration;
 use vectors::*;
 
 fn get_color(r: &Ray, world: &dyn HitableTrait) -> Color {
@@ -38,12 +40,27 @@ fn create_world() -> HitableList {
     }
 }
 
+fn create_progress(total_size: u64) -> ProgressBar {
+    let pb = ProgressBar::new(total_size);
+    pb.set_style(
+        ProgressStyle::with_template("{msg} [{elapsed_precise}] [{bar:40.cyan/blue}] {percent}%")
+            .unwrap()
+            .tick_chars("⠋⠙⠚⠛⠋⠙⠚⠛"),
+    );
+    pb.enable_steady_tick(Duration::from_millis(500));
+    pb.set_message("Rendering:");
+    return pb;
+}
+
 fn main() {
     let mut rng = rand::rng();
     let nx = 400;
     let ny = 200;
     let ns = 100;
+
     let mut imgbuf = image::ImageBuffer::new(nx, ny);
+    let pb = create_progress((nx * ny * ns) as u64);
+    let mut progress = 0;
 
     let cam = Camera::create_default();
     let world = create_world();
@@ -52,6 +69,8 @@ fn main() {
         for j in 0..ny {
             let mut col = COLORS.white;
             for _ in 0..ns {
+                progress += 1;
+                pb.set_position(progress as u64);
                 let u = (rng.random::<Num>() + (i as Num)) / (nx as Num);
                 let v = (rng.random::<Num>() + (j as Num)) / (ny as Num);
                 let r = cam.get_ray(u, v);
