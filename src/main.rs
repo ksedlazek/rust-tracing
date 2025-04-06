@@ -1,15 +1,14 @@
 mod camera;
 mod hitable;
 mod ray;
+mod scene;
 mod sphere;
 mod vectors;
 
-use camera::Camera;
-use hitable::{HitableList, HitableTrait};
+use hitable::HitableTrait;
 use indicatif::{ProgressBar, ProgressStyle};
 use rand::Rng;
 use ray::Ray;
-use sphere::Sphere;
 use std::time::Duration;
 use vectors::*;
 
@@ -22,21 +21,6 @@ fn get_color(r: &Ray, world: &dyn HitableTrait) -> Color {
         let unit_direction = r.direction.unit();
         let t = 0.5 * (unit_direction.y + 1.0);
         return (1.0 - t) * COLORS.white + t * COLORS.sky_blue;
-    }
-}
-
-fn create_world() -> HitableList {
-    HitableList {
-        list: vec![
-            Box::new(Sphere {
-                center: Vec3::new(0.0, 0.0, -1.0),
-                radius: 0.5,
-            }),
-            Box::new(Sphere {
-                center: Vec3::new(0.0, -100.5, -1.0),
-                radius: 100.0,
-            }),
-        ],
     }
 }
 
@@ -62,8 +46,7 @@ fn main() {
     let pb = create_progress((nx * ny * ns) as u64);
     let mut progress = 0;
 
-    let cam = Camera::create_default();
-    let world = create_world();
+    let scene = scene::create_chapter5_scene();
 
     for i in 0..nx {
         for j in 0..ny {
@@ -73,9 +56,9 @@ fn main() {
                 pb.set_position(progress as u64);
                 let u = (rng.random::<Num>() + (i as Num)) / (nx as Num);
                 let v = (rng.random::<Num>() + (j as Num)) / (ny as Num);
-                let r = cam.get_ray(u, v);
+                let r = scene.camera.get_ray(u, v);
                 //let p = r.point_at_parameter(2.0);
-                col += get_color(&r, &world);
+                col += get_color(&r, &scene.world);
             }
             col /= ns as Num;
             let ir = (255.99 * col.x) as u8;
