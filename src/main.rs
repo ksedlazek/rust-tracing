@@ -1,5 +1,6 @@
 mod camera;
 mod hitable;
+mod random;
 mod ray;
 mod scene;
 mod sphere;
@@ -7,16 +8,21 @@ mod vectors;
 
 use hitable::HitableTrait;
 use indicatif::{ProgressBar, ProgressStyle};
-use rand::Rng;
+use random::*;
 use ray::Ray;
 use std::time::Duration;
 use vectors::*;
 
-fn get_color(r: &Ray, world: &dyn HitableTrait) -> Color {
+fn get_color(r: &Ray, world: &dyn HitableTrait, rnd: Random) -> Color {
     let hit_record = world.hit(r, 0.0, Num::MAX);
     if hit_record.is_some() {
         let rec = hit_record.unwrap();
-        return 0.5 * Vec3::new(rec.normal.x + 1.0, rec.normal.y + 1.0, rec.normal.z + 1.0);
+        let target = rec.p + rec.normal + rnd.random_in_unit_sphere();
+        let reflected = &Ray {
+            origin: rec.p,
+            direction: target - rec.p,
+        };
+        return 0.5 * get_color(reflected, world, rnd);
     } else {
         let unit_direction = r.direction.unit();
         let t = 0.5 * (unit_direction.y + 1.0);
@@ -37,7 +43,7 @@ fn create_progress(total_size: u64) -> ProgressBar {
 }
 
 fn main() {
-    let mut rng = rand::rng();
+    let mut rnd = random::create_random();
     let nx = 400;
     let ny = 200;
     let ns = 100;
@@ -54,11 +60,11 @@ fn main() {
             for _ in 0..ns {
                 progress += 1;
                 pb.set_position(progress as u64);
-                let u = (rng.random::<Num>() + (i as Num)) / (nx as Num);
-                let v = (rng.random::<Num>() + (j as Num)) / (ny as Num);
+                let u = (rnd.random_zero_to_one() + (i as Num)) / (nx as Num);
+                let v = (rnd.random_zero_to_one() + (j as Num)) / (ny as Num);
                 let r = scene.camera.get_ray(u, v);
                 //let p = r.point_at_parameter(2.0);
-                col += get_color(&r, &scene.world);
+                col += get_color(&r, &scene.world, rnd);
             }
             col /= ns as Num;
             let ir = (255.99 * col.x) as u8;
