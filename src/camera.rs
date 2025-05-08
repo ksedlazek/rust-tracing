@@ -12,8 +12,7 @@ impl Camera {
     pub fn get_ray(&self, u: Num, v: Num) -> Ray {
         Ray {
             origin: self.origin,
-            direction: self.lower_left_corner + u * self.horizontal + v * self.vertical
-                - self.origin,
+            direction: self.lower_left_corner + u * self.horizontal + v * self.vertical - self.origin,
         }
     }
 }

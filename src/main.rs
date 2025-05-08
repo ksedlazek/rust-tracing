@@ -11,10 +11,10 @@ use indicatif::{ProgressBar, ProgressStyle};
 use random::*;
 use ray::Ray;
 use std::time::Duration;
-use vectors::*;
+use vectors::{Vec3Trait, *};
 
 fn get_color(r: &Ray, world: &dyn HitableTrait, rnd: &mut Random) -> Color {
-    let hit_record = world.hit(r, 0.0, Num::MAX);
+    let hit_record = world.hit(r, 0.001, Num::MAX);
     if hit_record.is_some() {
         let rec = hit_record.unwrap();
         let target = rec.p + rec.normal + rnd.random_in_unit_sphere();
@@ -67,6 +67,7 @@ fn main() {
                 col += get_color(&r, &scene.world, &mut rnd);
             }
             col /= ns as Num;
+            col.gamma2();
             let ir = (255.99 * col.x) as u8;
             let ig = (255.99 * col.y) as u8;
             let ib = (255.99 * col.z) as u8;

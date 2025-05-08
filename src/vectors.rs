@@ -4,8 +4,10 @@ use once_cell::sync::Lazy;
 pub type Num = f32;
 pub type Vec3 = na::Vector3<Num>;
 
-pub trait UnitTrait {
+pub trait Vec3Trait {
     fn unit(&self) -> Vec3;
+    fn unitize(&mut self);
+    fn gamma2(&mut self);
 }
 
 #[allow(dead_code)]
@@ -27,10 +29,23 @@ pub static VECTORS: Lazy<Vectors> = Lazy::new(|| Vectors {
     unit_z: Vec3::new(0.0, 0.0, 1.0),
 });
 
-impl UnitTrait for Vec3 {
+impl Vec3Trait for Vec3 {
     fn unit(&self) -> Vec3 {
         let l = self.len() as Num;
         return Vec3::new(self.x / l, self.y / l, self.z / l);
+    }
+
+    fn unitize(&mut self) {
+        let l = self.len() as Num;
+        self.x /= l;
+        self.y /= l;
+        self.z /= l;
+    }
+
+    fn gamma2(&mut self) {
+        self.x = self.x.sqrt();
+        self.y = self.y.sqrt();
+        self.z = self.z.sqrt();
     }
 }
 
