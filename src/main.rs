@@ -13,7 +13,7 @@ use ray::Ray;
 use std::time::Duration;
 use vectors::*;
 
-fn get_color(r: &Ray, world: &dyn HitableTrait, rnd: Random) -> Color {
+fn get_color(r: &Ray, world: &dyn HitableTrait, rnd: &mut Random) -> Color {
     let hit_record = world.hit(r, 0.0, Num::MAX);
     if hit_record.is_some() {
         let rec = hit_record.unwrap();
@@ -64,7 +64,7 @@ fn main() {
                 let v = (rnd.random_zero_to_one() + (j as Num)) / (ny as Num);
                 let r = scene.camera.get_ray(u, v);
                 //let p = r.point_at_parameter(2.0);
-                col += get_color(&r, &scene.world, rnd);
+                col += get_color(&r, &scene.world, &mut rnd);
             }
             col /= ns as Num;
             let ir = (255.99 * col.x) as u8;
